@@ -35,7 +35,7 @@ class CensorshipSpider(scrapy.Spider):
 
     def parse(self, response):
         report = {
-                'url': 'base64:' + response.url.encode('base64'),
+                'url': 'base64:' + response.url.encode('base64').strip(),
                 'creator': 'CensorshipCrawler',
                 'version': '0.0.1',
                 'status': response.status,
