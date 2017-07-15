@@ -20,10 +20,17 @@
 import json
 import scrapy
 
+from scrapy.linkextractors import LinkExtractor
 
 class CensorshipSpider(scrapy.Spider):
     name = "451"
-    handle_httpstatus_list = [451]
+    
+    def __init__(self, *args, **kw):
+        self.regexp = '.*' # default value for regexp filter
+        super(CensorshipSpider, self).__init__(*args, **kw)
+
+        # create an extractor that only returns urls matching a regexp
+        self.extractor = LinkExtractor(allow=self.regexp)
 
     def start_requests(self):
         if hasattr(self, 'url'):
@@ -34,9 +41,9 @@ class CensorshipSpider(scrapy.Spider):
                 'http://www.hackers.mu/',
             ]
         for url in urls:
-            yield scrapy.Request(url=url, callback=self.parse)
+            yield scrapy.Request(url=url)
 
-    def parse(self, response):
+    def record_451(self, response):
         report = {
                 'url': 'base64:' + response.url.encode('base64').strip(),
                 'creator': 'CensorshipCrawler',
@@ -55,4 +62,16 @@ class CensorshipSpider(scrapy.Spider):
             fp.write(json.dumps(report)+"\n")
 
         # TODO: send to central collector
+
+    def parse(self, response):
+        if response.status == 451:
+            self.record_451(response)
+        else:
+
+            # extract links for further items
+            for link in self.extractor.extract_links(response):
+                print link
+                yield scrapy.Request(url=link.url)
+
+
 
