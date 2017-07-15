@@ -1,0 +1,14 @@
+
+Legal Crawler
+=============
+
+Installation requirements:
+
+pip -r requirements.txt
+
+Running the crawler
+
+  $ cd censorship_crawler
+  $ scrapy crawl 451
+
+
