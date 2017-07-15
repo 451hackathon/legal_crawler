@@ -1,0 +1,18 @@
+
+Legal Crawler
+=============
+
+Installation requirements:
+
+pip -r requirements.txt
+
+Running the crawler
+
+  $ cd censorship_crawler
+  $ scrapy crawl 451
+
+Running the crawler against a specific URL:
+
+  $ cd censorship_crawler
+  $ scrapy crawl -a url=https://www.example.com 451
+

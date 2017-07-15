@@ -17,24 +17,61 @@
 
 #Developed for IETF 99 Hackathon
 
+import json
 import scrapy
 
+from scrapy.linkextractors import LinkExtractor
 
 class CensorshipSpider(scrapy.Spider):
     name = "451"
-    handle_httpstatus_list = [451]
+    
+    def __init__(self, *args, **kw):
+        self.regexp = '.*' # default value for regexp filter
+        super(CensorshipSpider, self).__init__(*args, **kw)
+
+        # create an extractor that only returns urls matching a regexp
+        self.extractor = LinkExtractor(allow=self.regexp)
 
     def start_requests(self):
-        urls = [
-            'http://www.newzbin.com/',
-            'http://www.hackers.mu/',
-        ]
+        if hasattr(self, 'url'):
+            urls = [self.url]
+        else:
+            urls = [
+                'http://www.newzbin.com/',
+                'http://www.hackers.mu/',
+            ]
         for url in urls:
-            yield scrapy.Request(url=url, callback=self.parse)
+            yield scrapy.Request(url=url)
+
+    def record_451(self, response):
+        report = {
+                'url': 'base64:' + response.url.encode('base64').strip(),
+                'creator': 'CensorshipCrawler',
+                'version': '0.0.1',
+                'status': response.status,
+                'statusText': 'Unavailable for Legal Reasons',
+                }
+
+        if 'Link' in response.headers:
+            link = response.headers['Link']
+            if 'rel=' in link and 'blocked-by' in link:
+                report['blockedBy'] = link.split('; ')[0].strip('<>')
+
+        self.log(report)
+        with open('output.json', 'a') as fp:
+            fp.write(json.dumps(report)+"\n")
+
+        # TODO: send to central collector
 
     def parse(self, response):
-        page = response.url.split("/")[-2]
-        filename = 'quotes-%s.html' % page
-        with open(filename, 'wb') as f:
-            f.write(response.body)
-        self.log('Saved file %s' % filename)
+        if response.status == 451:
+            self.record_451(response)
+        else:
+
+            # extract links for further items
+            for link in self.extractor.extract_links(response):
+                print link
+                yield scrapy.Request(url=link.url)
+
+
+
