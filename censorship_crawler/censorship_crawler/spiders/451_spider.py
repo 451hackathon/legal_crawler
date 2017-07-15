@@ -26,10 +26,13 @@ class CensorshipSpider(scrapy.Spider):
     handle_httpstatus_list = [451]
 
     def start_requests(self):
-        urls = [
-            'http://www.newzbin.com/',
-            'http://www.hackers.mu/',
-        ]
+        if hasattr(self, 'url'):
+            urls = [self.url]
+        else:
+            urls = [
+                'http://www.newzbin.com/',
+                'http://www.hackers.mu/',
+            ]
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse)
 
