@@ -25,6 +25,7 @@ from censorship_crawler.items import CensorshipCrawlerItem
 
 class CensorshipSpider(scrapy.Spider):
     name = "451"
+    handle_httpstatus_list = [451]
     
     def __init__(self, *args, **kw):
         self.regexp = '.*' # default value for regexp filter
