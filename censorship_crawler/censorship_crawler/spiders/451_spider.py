@@ -21,6 +21,7 @@ import json
 import scrapy
 
 from scrapy.linkextractors import LinkExtractor
+from censorship_crawler.items import CensorshipCrawlerItem
 
 class CensorshipSpider(scrapy.Spider):
     name = "451"
@@ -44,34 +45,22 @@ class CensorshipSpider(scrapy.Spider):
             yield scrapy.Request(url=url)
 
     def record_451(self, response):
-        report = {
-                'url': 'base64:' + response.url.encode('base64').strip(),
-                'creator': 'CensorshipCrawler',
-                'version': '0.0.1',
-                'status': response.status,
-                'statusText': 'Unavailable for Legal Reasons',
-                }
-
+        report = CensorshipCrawlerItem(url=response.url.encode('base64').strip(),status=response.status)
         if 'Link' in response.headers:
             link = response.headers['Link']
             if 'rel=' in link and 'blocked-by' in link:
                 report['blockedBy'] = link.split('; ')[0].strip('<>')
-
         self.log(report)
-        with open('output.json', 'a') as fp:
-            fp.write(json.dumps(report)+"\n")
+        return report
 
         # TODO: send to central collector
 
     def parse(self, response):
         if response.status == 451:
-            self.record_451(response)
+            yield self.record_451(response)
         else:
-
             # extract links for further items
             for link in self.extractor.extract_links(response):
                 print link
                 yield scrapy.Request(url=link.url)
-
-
 
