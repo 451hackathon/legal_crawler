@@ -17,6 +17,7 @@
 
 #Developed for IETF 99 Hackathon
 
+import json
 import scrapy
 
 
@@ -33,8 +34,22 @@ class CensorshipSpider(scrapy.Spider):
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
-        page = response.url.split("/")[-2]
-        filename = 'quotes-%s.html' % page
-        with open(filename, 'wb') as f:
-            f.write(response.body)
-        self.log('Saved file %s' % filename)
+        report = {
+                'url': 'base64:' + response.url.encode('base64'),
+                'creator': 'CensorshipCrawler',
+                'version': '0.0.1',
+                'status': response.status,
+                'statusText': 'Unavailable for Legal Reasons',
+                }
+
+        if 'Link' in response.headers:
+            link = response.headers['Link']
+            if 'rel=' in link and 'blocked-by' in link:
+                report['blockedBy'] = link.split('; ')[0].strip('<>')
+
+        self.log(report)
+        with open('output.json', 'a') as fp:
+            fp.write(json.dumps(report)+"\n")
+
+        # TODO: send to central collector
+
