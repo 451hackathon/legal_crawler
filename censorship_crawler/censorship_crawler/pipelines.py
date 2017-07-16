@@ -45,7 +45,10 @@ class ReportSubmissionPipeline(object):
                 'date': item['date']
                 }
         self.logger.info("Creating report: %s", json.dumps(data))
-        self.session.post(self.collector_url, data=json.dumps(data)).addCallback(self.report_sent)
+        self.session.post(self.collector_url, 
+                data=json.dumps(data),
+                headers={'Content-type': 'application/json'},
+                ).addCallback(self.report_sent)
 
     def report_sent(self, response):
         self.logger.info("Response sent: {0}", response.status_code)
