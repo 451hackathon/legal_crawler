@@ -22,6 +22,7 @@ import datetime
 
 import scrapy
 
+from scrapy.exporters import JsonLinesItemExporter
 from scrapy.linkextractors import LinkExtractor
 from censorship_crawler.items import CensorshipCrawlerItem
 
@@ -35,7 +36,7 @@ class CensorshipSpider(scrapy.Spider):
 
         # create an extractor that only returns urls matching a regexp
         self.extractor = LinkExtractor(allow=self.regexp)
-
+        self.exporter = JsonLinesItemExporter(file("output.json","w"),export_empty_fields=True)
     def start_requests(self):
         if hasattr(self, 'url'):
             urls = [self.url]
@@ -58,6 +59,7 @@ class CensorshipSpider(scrapy.Spider):
             if 'rel=' in link and 'blocked-by' in link:
                 report['blockedBy'] = link.split('; ')[0].strip('<>')
         self.log(report)
+        self.exporter.export_item(report)
         return report
 
     def parse(self, response):

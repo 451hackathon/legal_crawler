@@ -1,2 +1,2 @@
 scrapy
-twisted_requests
+requests_twisted
