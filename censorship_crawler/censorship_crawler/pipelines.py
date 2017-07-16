@@ -49,9 +49,10 @@ class ReportSubmissionPipeline(object):
                 data=json.dumps(data),
                 headers={'Content-type': 'application/json'},
                 ).addCallback(self.report_sent)
-
+        return item
+        
     def report_sent(self, response):
-        self.logger.info("Response sent: {0}", response.status_code)
+        self.logger.info("Response sent: %s", response.status_code)
 
 
 
