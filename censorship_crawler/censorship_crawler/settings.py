@@ -8,7 +8,7 @@
 #     http://doc.scrapy.org/en/latest/topics/settings.html
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
-
+import os
 BOT_NAME = 'censorship_crawler'
 
 SPIDER_MODULES = ['censorship_crawler.spiders']
@@ -72,7 +72,8 @@ ITEM_PIPELINES = {
      
 #    'censorship_crawler.pipelines.SomePipeline': 300,
 }
-
+FEED_FORMAT = 'jsonlines'
+FEED_URI = 'file://'+os.getcwd()+'/output.json'
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
 #AUTOTHROTTLE_ENABLED = True
