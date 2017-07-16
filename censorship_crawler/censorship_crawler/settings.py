@@ -75,7 +75,6 @@ ITEM_PIPELINES = {
 }
 FEED_FORMAT = 'jsonlines'
 FEED_URI = 'file://'+os.getcwd()+'/output.json'
-print FEED_URI
 FEED_EXPORT_FIELDS =["url","status","blockedBy","date"]
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
