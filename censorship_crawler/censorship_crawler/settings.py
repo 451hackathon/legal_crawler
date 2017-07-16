@@ -16,6 +16,7 @@ NEWSPIDER_MODULE = 'censorship_crawler.spiders'
 
 
 #COLLECTOR_URL = "http://www.example.com/report"
+COLLECTOR_URL = "http://collector.wirecdn.com/report"
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'censorship_crawler (+http://www.yourdomain.com)'
