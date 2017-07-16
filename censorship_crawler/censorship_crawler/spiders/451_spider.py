@@ -18,6 +18,8 @@
 #Developed for IETF 99 Hackathon
 
 import json
+import datetime
+
 import scrapy
 
 from scrapy.linkextractors import LinkExtractor
@@ -46,7 +48,11 @@ class CensorshipSpider(scrapy.Spider):
             yield scrapy.Request(url=url)
 
     def record_451(self, response):
-        report = CensorshipCrawlerItem(url=response.url.encode('base64').strip(),status=response.status)
+        report = CensorshipCrawlerItem(
+                url=response.url, # .encode('base64').strip(),
+                status=response.status,
+                date=datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+                )
         if 'Link' in response.headers:
             link = response.headers['Link']
             if 'rel=' in link and 'blocked-by' in link:
@@ -54,14 +60,12 @@ class CensorshipSpider(scrapy.Spider):
         self.log(report)
         return report
 
-        # TODO: send to central collector
-
     def parse(self, response):
         if response.status == 451:
             yield self.record_451(response)
         else:
             # extract links for further items
             for link in self.extractor.extract_links(response):
-                print link
+                self.log("Got link: " + link.url)
                 yield scrapy.Request(url=link.url)
 

@@ -15,6 +15,8 @@ SPIDER_MODULES = ['censorship_crawler.spiders']
 NEWSPIDER_MODULE = 'censorship_crawler.spiders'
 
 
+#COLLECTOR_URL = "http://www.example.com/report"
+
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'censorship_crawler (+http://www.yourdomain.com)'
 
@@ -66,6 +68,8 @@ ROBOTSTXT_OBEY = True
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
         'scrapy.dupefilters.RFPDupeFilter': 300,
+        'censorship_crawler.pipelines.ReportSubmissionPipeline': 600,
+     
 #    'censorship_crawler.pipelines.SomePipeline': 300,
 }
 
@@ -89,3 +93,5 @@ ITEM_PIPELINES = {
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+COLLECTOR_URL = "http://31.133.136.208:1337/report"

@@ -12,5 +12,6 @@ class CensorshipCrawlerItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     url=scrapy.Field()
-    status=scrapy.Field()
-
+    status=scrapy.Field(serializer=int)
+    blockedBy=scrapy.Field()
+    date=scrapy.Field()
