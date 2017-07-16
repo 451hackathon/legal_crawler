@@ -94,4 +94,3 @@ ITEM_PIPELINES = {
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-COLLECTOR_URL = "http://31.133.136.208:1337/report"
